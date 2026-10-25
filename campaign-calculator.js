@@ -34,7 +34,13 @@
     get('campaignNet').textContent = valid ? money.format(gross - fee) : '—';
 
     const note = get('campaignVolumeNote');
-    note.hidden = records <= allowance;
+    const startingPrice = plan.selectedOptions[0].dataset.startingPrice === 'true';
+    note.hidden = records <= allowance && !startingPrice;
+    if (startingPrice) {
+      get('campaignFee').textContent = 'From ' + money.format(fee);
+      note.textContent = 'Enterprise uses the £1,995 starting price and 5,000-property baseline for illustration. Your agreed volume and price may differ; extra volume costs are excluded.';
+      return;
+    }
     note.textContent = records > allowance
       ? `This scenario uses ${(records - allowance).toLocaleString('en-GB')} more leads than your plan includes. Additional lead costs are not included in these results.`
       : '';
