@@ -9,6 +9,58 @@
   <link rel="icon" type="image/png" sizes="32x32" href="assets/locayter-favicon.png">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/locayter-apple-touch.png">
   <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* LOCAYTER interactive postcode demo */
+    .demo-selector { display:grid; grid-template-columns:1fr; gap:9px; margin:22px 0 20px; }
+    .demo-option { display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; border:1px solid rgba(255,255,255,.15); border-radius:10px; background:rgba(255,255,255,.035); color:inherit; text-align:left; cursor:pointer; font:inherit; transition:border-color .2s,background .2s,transform .2s; }
+    .demo-option:hover { border-color:rgba(200,255,77,.55); transform:translateY(-1px); }
+    .demo-option.active { border-color:#c8ff4d; background:rgba(200,255,77,.09); }
+    .demo-option-icon { display:grid; place-items:center; width:30px; height:30px; flex:0 0 30px; border-radius:8px; background:rgba(200,255,77,.12); color:#c8ff4d; font-size:18px; }
+    .postcode-demo-form { margin-top:4px; }
+    .postcode-demo-form label { display:block; margin-bottom:8px; font-size:13px; font-weight:700; }
+    .postcode-entry { display:flex; gap:9px; }
+    .postcode-entry input { min-width:0; flex:1; padding:13px 14px; border:1px solid rgba(255,255,255,.2); border-radius:9px; background:rgba(255,255,255,.07); color:inherit; font:inherit; text-transform:uppercase; }
+    .postcode-entry input::placeholder { color:rgba(255,255,255,.45); text-transform:none; }
+    .postcode-entry .button { white-space:nowrap; }
+    .demo-input-note,.demo-disclaimer { margin:8px 0 0; color:rgba(255,255,255,.58); font-size:11px; line-height:1.5; }
+    .demo-map-wrap { position:relative; height:174px; margin-top:18px; overflow:hidden; border:1px solid rgba(255,255,255,.12); border-radius:10px; background:#d9e1d9; isolation:isolate; }
+    .demo-map-blur { position:absolute; inset:-12px; overflow:hidden; filter:blur(2.8px); opacity:.9; background:linear-gradient(135deg,#dce4d9,#bfcfc6); }
+    .demo-map-road { position:absolute; height:13px; width:130%; background:#f8f7ef; border:1px solid rgba(110,130,119,.16); transform-origin:left center; }
+    .road-one { top:23%; left:-8%; transform:rotate(19deg); }.road-two { top:76%; left:-5%; transform:rotate(-15deg); }
+    .road-three { top:-10%; left:40%; transform:rotate(76deg); }.road-four { top:5%; left:84%; transform:rotate(105deg); }
+    .demo-map-block { position:absolute; background:#aabda9; border:5px solid #e8ece2; border-radius:5px; }
+    .block-one { left:8%;top:9%;width:20%;height:29%; }.block-two { left:35%;top:12%;width:24%;height:24%; }
+    .block-three { left:67%;top:8%;width:22%;height:31%; }.block-four { left:12%;top:58%;width:23%;height:31%; }
+    .block-five { left:42%;top:56%;width:18%;height:32%; }.block-six { left:72%;top:57%;width:19%;height:27%; }
+    .demo-scan-beam { position:absolute; z-index:2; top:0; bottom:0; left:-3%; width:3px; opacity:0; background:#c8ff4d; box-shadow:0 0 18px 7px rgba(200,255,77,.7); }
+    .finder.scanning .demo-scan-beam { opacity:1; animation:locayterScan 1.65s ease-in-out infinite alternate; }
+    @keyframes locayterScan { from { left:0; } to { left:100%; } }
+    .demo-targets { position:absolute; inset:0; z-index:3; }
+    .demo-targets i { position:absolute; left:var(--x); top:var(--y); width:12px; height:12px; border:2px solid #fff; border-radius:50%; background:#ed453e; box-shadow:0 0 0 4px rgba(237,69,62,.2),0 1px 7px rgba(0,0,0,.25); opacity:0; transform:scale(.2); }
+    .demo-targets.show-targets i { animation:locayterTarget .35s ease-out forwards; }
+    .demo-targets.show-targets i:nth-child(2n) { animation-delay:.12s; }.demo-targets.show-targets i:nth-child(3n) { animation-delay:.22s; }
+    @keyframes locayterTarget { to { opacity:1; transform:scale(1); } }
+    .demo-map-status { position:absolute; z-index:4; left:10px; bottom:10px; padding:7px 10px; border-radius:6px; background:rgba(15,29,52,.88); color:#fff; font-size:11px; }
+    .demo-result { display:flex; flex-direction:column; gap:8px; margin-top:15px; padding:15px; border:1px solid rgba(200,255,77,.4); border-radius:10px; background:rgba(200,255,77,.07); }
+    .demo-result[hidden] { display:none; }
+    .demo-result-label { display:block; color:rgba(255,255,255,.68); font-size:11px; }
+    .demo-result strong { display:block; color:#c8ff4d; font-size:32px; line-height:1.2; }
+    .demo-result p { margin:0; font-size:12px; line-height:1.5; }
+    .demo-result .button { align-self:flex-start; margin-top:4px; }
+    .comparison-note { max-width:850px; margin:14px auto 48px; color:var(--muted,#667085); font-size:13px; line-height:1.65; }
+    .offgrid-case { display:grid; grid-template-columns:.8fr 1.2fr; gap:36px; padding:clamp(24px,4vw,46px); border-radius:18px; background:#0f1d34; color:#fff; }
+    .offgrid-case .section-kicker { color:#c8ff4d; }.case-brand { margin:18px 0 10px; color:#c8ff4d; font-size:13px; font-weight:800; letter-spacing:.18em; }
+    .offgrid-case-intro h3 { max-width:440px; margin:0 0 14px; font-size:clamp(25px,3vw,36px); line-height:1.12; }
+    .offgrid-case-intro .lead { color:rgba(255,255,255,.7); font-size:15px; }
+    .offgrid-case-detail { display:grid; grid-template-columns:1fr; gap:18px; }
+    .offgrid-case-detail>div { padding:0 0 16px; border-bottom:1px solid rgba(255,255,255,.14); }
+    .case-detail-number { color:#c8ff4d; font-size:11px; font-weight:800; letter-spacing:.12em; }
+    .offgrid-case-detail h4 { margin:5px 0; font-size:17px; }.offgrid-case-detail p,.offgrid-case .case-note { margin:0; color:rgba(255,255,255,.68); font-size:13px; line-height:1.6; }
+    .offgrid-case .case-note { grid-column:1/-1; padding-top:14px; border-top:1px solid rgba(255,255,255,.14); font-size:11px; }
+    @media(max-width:760px) { .postcode-entry { flex-direction:column; }.postcode-entry .button { width:100%; }.offgrid-case { grid-template-columns:1fr; gap:22px; } }
+  </style>
+
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -20,16 +72,14 @@
         <span>LOCAYTER</span>
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="#product">Product</a>
-        <a href="#results">Results</a>
-        <a href="#industries">Industries</a>
-        <a href="#cases">Case studies</a>
-        <a href="#about">About us</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#why-locayter">Why Locayter</a>
         <a href="#pricing">Pricing</a>
+        <a href="#about">About</a>
       </div>
       <div class="nav-actions">
-        <a class="button button-outline" href="#cases">See proof</a>
-        <a class="button button-light" href="https://tool.locayter.com/" target="_blank" rel="noopener" aria-label="Open the Solar Opportunity Finder in a new tab">Open the tool</a>
+        <a class="button button-outline" href="#contact">Let’s talk</a>
+        <a class="button button-light" href="https://tool.locayter.com/" target="_blank" rel="noopener">Customer login</a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="navLinks" aria-label="Open menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
@@ -41,12 +91,12 @@
     <header class="hero" id="top">
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow">Property-level LOCAYTER</p>
-          <h1>Find the homes.<br><span>Win the work.</span></h1>
-          <p class="lead">LOCAYTER Tool spots the UK properties most likely to need what you sell, verifies every match, and helps you reach the decision-maker directly.</p>
+          <p class="eyebrow">Property intelligence. Made actionable.</p>
+          <h1>Find the right properties.<br><span>Win the right customers.</span></h1>
+          <p class="lead">LOCAYTER uses satellite imagery and property-level analysis to identify homes that match your ideal customer profile. Every lead is human-verified before it reaches your sales team.</p>
           <div class="hero-actions">
-            <a class="button button-primary" href="https://tool.locayter.com/" target="_blank" rel="noopener" aria-label="Try the Solar Opportunity Finder in a new tab">Try the live tool</a>
-            <a class="text-link" href="#product">See how it works</a>
+            <a class="button button-primary" href="#demo-video">Watch demo</a>
+            <a class="text-link" href="#how-it-works">Get started</a>
           </div>
           <div class="micro-proof">
             <div class="avatar-stack" aria-hidden="true"><span>S</span><span>R</span><span>E</span></div>
@@ -54,174 +104,124 @@
           </div>
         </div>
 
-        <div class="finder reveal" id="finder" aria-label="Interactive product preview">
+        <div class="finder reveal" id="finder" aria-label="Interactive postcode opportunity demo">
           <div class="finder-top">
             <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
             <span class="finder-badge">PROPERTY MATCHER</span>
           </div>
-          <h2>Describe your best customer.</h2>
-          <p>We turn your sales criteria into verified addresses.</p>
-          <div class="criteria">
-            <div class="criterion">
-              <span class="criterion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11 12 4l9 7v9H3v-9Z"/><path d="M9 20v-6h6v6"/></svg></span>
-              <span><small>Property type</small><strong>Detached &amp; semi-detached</strong></span><span class="toggle" aria-hidden="true"></span>
-            </div>
-            <div class="criterion">
-              <span class="criterion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m4 14 8-8 8 8"/><path d="M6 12v8h12v-8M9 20v-5h6v5"/></svg></span>
-              <span><small>Visible signal</small><strong>Large south-facing roof</strong></span><span class="toggle" aria-hidden="true"></span>
-            </div>
-            <div class="criterion">
-              <span class="criterion-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg></span>
-              <span><small>Target area</small><strong>Within 25 miles of Bristol</strong></span><span class="toggle" aria-hidden="true"></span>
-            </div>
+          <h2>Find your next opportunity.</h2>
+          <p>Choose what you sell, enter a postcode and see how property-level targeting works.</p>
+
+          <div class="demo-selector" role="group" aria-label="Choose an opportunity type">
+            <button class="demo-option active" type="button" data-demo-type="solar" aria-pressed="true">
+              <span class="demo-option-icon">☀</span><span>Solar opportunities</span>
+            </button>
+            <button class="demo-option" type="button" data-demo-type="renovation" aria-pressed="false">
+              <span class="demo-option-icon">⌂</span><span>Renovation opportunities</span>
+            </button>
+            <button class="demo-option" type="button" data-demo-type="pools" aria-pressed="false">
+              <span class="demo-option-icon">▤</span><span>Swimming pools</span>
+            </button>
           </div>
-          <button class="button scan" type="button" id="scanButton">Scan for matching properties</button>
-          <div class="scan-state" aria-live="polite">
-            <span id="scanLabel">Ready to scan</span><span class="scan-line"><i></i></span><span class="scan-result" id="scanResult">-</span>
+
+          <form class="postcode-demo-form" id="postcodeDemoForm">
+            <label for="demoPostcode">Enter a UK postcode</label>
+            <div class="postcode-entry">
+              <input id="demoPostcode" name="postcode" type="text" placeholder="e.g. BH14 8NX" autocomplete="postal-code" maxlength="10" required>
+              <button class="button scan" type="submit" id="scanButton">Scan area</button>
+            </div>
+            <p class="demo-input-note">Try any valid UK postcode. This interactive preview uses fictional results.</p>
+          </form>
+
+          <div class="demo-map-wrap" id="demoMapWrap" aria-label="Illustrative map scan preview">
+            <div class="demo-map-blur" aria-hidden="true">
+              <div class="demo-map-road road-one"></div><div class="demo-map-road road-two"></div>
+              <div class="demo-map-road road-three"></div><div class="demo-map-road road-four"></div>
+              <div class="demo-map-block block-one"></div><div class="demo-map-block block-two"></div>
+              <div class="demo-map-block block-three"></div><div class="demo-map-block block-four"></div>
+              <div class="demo-map-block block-five"></div><div class="demo-map-block block-six"></div>
+            </div>
+            <div class="demo-scan-beam" aria-hidden="true"></div>
+            <div class="demo-targets" id="demoTargets" aria-hidden="true">
+              <i style="--x:13%;--y:25%"></i><i style="--x:27%;--y:66%"></i>
+              <i style="--x:42%;--y:36%"></i><i style="--x:58%;--y:73%"></i>
+              <i style="--x:72%;--y:28%"></i><i style="--x:85%;--y:57%"></i>
+              <i style="--x:34%;--y:18%"></i><i style="--x:66%;--y:48%"></i>
+            </div>
+            <div class="demo-map-status" id="demoMapStatus">Your selected area will appear here</div>
           </div>
+
+          <div class="demo-result" id="demoResult" aria-live="polite" hidden>
+            <div><span class="demo-result-label">Potential matches identified</span><strong id="demoMatchCount">—</strong></div>
+            <p id="demoResultCopy">Your preview is ready.</p>
+            <a class="button button-primary" href="https://tool.locayter.com/" target="_blank" rel="noopener">Log in to unlock your matches</a>
+          </div>
+          <p class="demo-disclaimer">Demonstration only. Map visuals and match counts are fictional and do not represent a live property search or verified leads.</p>
         </div>
       </div>
     </header>
 
-    <div class="proof-bar" aria-label="Product highlights">
-      <div class="container proof-grid">
-        <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg><div><strong>Human verified</strong><span>Quality checked before delivery</span></div></div>
-        <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9l8-5 8 5v10H4Z"/><path d="M8 13h8"/></svg><div><strong>Property-level precision</strong><span>Go beyond broad postcodes</span></div></div>
-        <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h6M8 16h4"/></svg><div><strong>Campaign ready</strong><span>Export or send direct mail</span></div></div>
-        <div class="proof-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18 9 13l4 3 7-9"/><path d="M15 7h5v5"/></svg><div><strong>Built to scale</strong><span>From a pilot to national coverage</span></div></div>
-      </div>
-    </div>
-
-    <section class="product" id="product">
+    <section class="how-it-works" id="how-it-works">
       <div class="container">
         <div class="section-head reveal">
-          <div><p class="eyebrow section-kicker">What the product does</p><h2>Your market, narrowed to the right front doors.</h2></div>
-          <p class="lead">Tell us the physical signals that make a property valuable to you. Our technology searches at scale, our team validates the matches, and your sales team gets a clean list ready for outreach.</p>
+          <div><p class="eyebrow section-kicker">How it works</p><h2>From a clear brief to a list of the right properties.</h2></div>
+          <p class="lead">LOCAYTER turns the physical characteristics of your ideal customer’s property into a focused, actionable audience for your sales team.</p>
         </div>
         <div class="steps reveal">
-          <article class="step"><span class="step-no">01</span><h3>Set the signal</h3><p>Choose the location, property type and visible characteristics that define your best-fit customer.</p></article>
-          <article class="step"><span class="step-no">02</span><h3>Scan the market</h3><p>Satellite and property data locate the homes that match your brief across your chosen territory.</p></article>
-          <article class="step"><span class="step-no">03</span><h3>Verify each lead</h3><p>A human quality-control layer checks the result against your criteria before it reaches you.</p></article>
-          <article class="step"><span class="step-no">04</span><h3>Reach the right door</h3><p>Export verified addresses or run an end-to-end direct-mail campaign from the platform.</p></article>
-        </div>
-        <div class="verification-band reveal">
-          <div><p class="eyebrow section-kicker">Lead verification</p><h3>Technology finds them. Our team verifies them.</h3><p>Your criteria, our proprietary technology and a human quality-control layer between the data and your sales team.</p></div>
-          <div class="verification-points">
-            <article class="verification-point"><span>01</span><strong>Identify</strong><p>Satellite imagery reveals potential property matches at scale.</p></article>
-            <article class="verification-point"><span>02</span><strong>Analyse</strong><p>Each property is assessed against the criteria in your brief.</p></article>
-            <article class="verification-point"><span>03</span><strong>Verify</strong><p>Human review checks the final batch before it becomes a lead.</p></article>
-          </div>
+          <article class="step"><span class="step-no">01</span><h3>Define your ideal customer</h3><p>Tell us what you sell, where you operate and which property characteristics indicate a strong potential fit.</p></article>
+          <article class="step"><span class="step-no">02</span><h3>Analyse the area</h3><p>Our satellite-image analysis identifies properties that appear to match your chosen criteria across your target territory.</p></article>
+          <article class="step"><span class="step-no">03</span><h3>Human verification</h3><p>Potential matches are reviewed against your brief. Unclear or unsuitable properties can be removed before delivery.</p></article>
+          <article class="step"><span class="step-no">04</span><h3>Put your leads to work</h3><p>Receive a structured list of verified property leads, ready for your team to prioritise and contact.</p></article>
         </div>
       </div>
     </section>
 
-    <section class="platform" aria-labelledby="platform-title">
-      <div class="container platform-grid">
-        <div class="reveal">
-          <p class="eyebrow section-kicker">One focused workspace</p>
-          <h2 id="platform-title">From search brief to live campaign.</h2>
-          <p class="lead" id="featureCopy">Define a clear property profile and see the exact criteria being used to build your audience.</p>
-          <div class="feature-list" role="tablist" aria-label="Platform features">
-            <button class="feature-button active" type="button" data-feature="Find leads" data-copy="Define a clear property profile and see the exact criteria being used to build your audience." role="tab" aria-selected="true"><span>01</span><span>Find leads</span><span>●</span></button>
-            <button class="feature-button" type="button" data-feature="Verify matches" data-copy="Follow every batch through human verification, with duplicates and uncertain matches removed." role="tab" aria-selected="false"><span>02</span><span>Verify matches</span><span>○</span></button>
-            <button class="feature-button" type="button" data-feature="Run campaigns" data-copy="Send the audience to your CRM or take a direct-mail campaign from creative to dispatch." role="tab" aria-selected="false"><span>03</span><span>Run campaigns</span><span>○</span></button>
-            <button class="feature-button" type="button" data-feature="Track performance" data-copy="Keep leads, credit usage and campaign status visible to the whole revenue team." role="tab" aria-selected="false"><span>04</span><span>Track performance</span><span>○</span></button>
-          </div>
-        </div>
-
-        <div class="dashboard reveal" aria-label="LOCAYTER Tool dashboard preview">
-          <div class="dash-shell">
-            <div class="dash-top"><strong>LOCAYTER TOOL / <span id="dashFeature">Find leads</span></strong><span class="dash-plan">PROFESSIONAL · 112 CREDITS</span></div>
-            <div class="dash-main">
-              <aside class="dash-nav"><div class="active">Overview</div><div>Find leads</div><div>My leads</div><div>Campaigns</div><div>Billing</div></aside>
-              <div class="dash-content">
-                <div class="dash-heading"><div><small>Good morning, Sam</small><h3>Your lead pipeline</h3></div><small>Updated today</small></div>
-                <div class="stat-grid">
-                  <div class="stat"><small>VERIFIED LEADS</small><strong>63 <span>+18%</span></strong></div>
-                  <div class="stat"><small>IN REVIEW</small><strong>28</strong></div>
-                  <div class="stat"><small>ACTIVE CAMPAIGNS</small><strong>3</strong></div>
-                </div>
-                <div class="map-card">
-                  <svg viewBox="0 0 600 280" preserveAspectRatio="none" aria-hidden="true">
-                    <path d="M-10 180C65 150 88 46 170 75s117 127 198 89 101-91 242-55" fill="none" stroke="#8eb8b6" stroke-width="18" opacity=".38"/>
-                    <path d="M20 15 120 265M148 -10l40 300M290 -20l-20 320M430 -20l-56 320M510 -20l35 320M0 80l600 40M0 210l600-30" stroke="#fff" stroke-width="3" opacity=".72"/>
-                    <g fill="#ff675c" stroke="#0f1d34" stroke-width="3"><circle cx="120" cy="90" r="9"/><circle cx="211" cy="182" r="9"/><circle cx="316" cy="95" r="9"/><circle cx="390" cy="155" r="9"/><circle cx="496" cy="85" r="9"/><circle cx="530" cy="201" r="9"/></g>
-                    <g fill="#c8ff4d" stroke="#0f1d34" stroke-width="3"><circle cx="162" cy="134" r="8"/><circle cx="350" cy="205" r="8"/><circle cx="465" cy="130" r="8"/></g>
-                  </svg>
-                  <div class="map-overlay"><span><i class="dot"></i><strong>91 matches</strong> in target area</span><span>63 verified</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="economics" id="results">
-      <div class="container economics-grid">
-        <div class="economics-copy reveal">
-          <p class="eyebrow section-kicker">The economics of precision</p>
-          <h2>Stop paying to reach everyone.</h2>
-          <p class="lead">Traditional advertising starts with a broad audience and qualifies people afterwards. LOCAYTER Tool starts with the property, so your outreach budget is focused before the first message lands.</p>
-          <a class="button button-dark" href="#pricing">Compare plans</a>
-        </div>
-        <div class="reveal">
-          <div class="comparison" aria-label="Traditional PPC and LOCAYTER Tool comparison">
-            <div class="compare-row compare-head"><div>Traditional PPC</div><div>LOCAYTER Tool</div></div>
-            <div class="compare-row"><div>Pay for clicks</div><div>Pay for verified property leads</div></div>
-            <div class="compare-row"><div>Target people already searching</div><div>Target properties that fit</div></div>
-            <div class="compare-row"><div>Qualification happens afterwards</div><div>Qualification happens before outreach</div></div>
-            <div class="compare-row"><div>Compete for attention</div><div>Take your message directly to the property</div></div>
-          </div>
-          <div class="ppc-note"><strong>Illustrative PPC example:</strong> at a £5 average cost per click, a £1,000 budget buys about 200 clicks. Those clicks still need to become enquiries, appointments and customers. Our model begins with identify → verify → target → contact.</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="industries" id="industries">
+    <section class="why-locayter" id="why-locayter">
       <div class="container">
         <div class="section-head reveal">
-          <div><p class="eyebrow section-kicker">Who it’s for</p><h2>If the right customer leaves clues on their property, we can help find them.</h2></div>
-          <p class="lead">The strongest campaigns connect a visible property characteristic to a valuable service your team can deliver.</p>
+          <div><p class="eyebrow section-kicker">Why LOCAYTER</p><h2>Stop guessing who might need your service.</h2></div>
+          <p class="lead">Most marketing identifies people who have already raised their hand. LOCAYTER helps you identify properties that fit the brief before you start the conversation.</p>
         </div>
-        <div class="industry-grid">
-          <article class="industry-card reveal"><span>01</span><h3>Solar</h3><p>Find properties with the roof area, orientation and characteristics installation teams need.</p></article>
-          <article class="industry-card reveal"><span>02</span><h3>Pools</h3><p>Target homes with the space and property characteristics suited to outdoor living.</p></article>
-          <article class="industry-card reveal"><span>03</span><h3>Home improvement</h3><p>Roofing, windows, extensions, driveways and landscaping.</p></article>
-          <article class="industry-card reveal"><span>04</span><h3>EV &amp; tech</h3><p>Identify properties suited to EV charging and higher-value home technology.</p></article>
-          <article class="industry-card reveal"><span>05</span><h3>Premium services</h3><p>Find high-value residential prospects using visible physical signals.</p></article>
-        </div>
-      </div>
-    </section>
 
-    <section class="cases" id="cases">
-      <div class="container">
-        <div class="section-head reveal">
-          <div><p class="eyebrow section-kicker">Case studies</p><h2>What precision looks like in the real world.</h2></div>
-          <p class="lead">Three example campaigns show how a property-first audience can change the brief before a sales rep makes the first call.</p>
+        <div class="comparison reveal" aria-label="Comparison of broad marketing and LOCAYTER">
+          <div class="compare-row compare-head"><div>Traditional broad marketing</div><div>LOCAYTER</div></div>
+          <div class="compare-row"><div>Targets broad audiences or postcode areas</div><div>Targets individual properties against your criteria</div></div>
+          <div class="compare-row"><div>Relies on people actively searching or engaging</div><div>Finds potential opportunities before the customer enquires</div></div>
+          <div class="compare-row"><div>Sales teams qualify suitability after the enquiry</div><div>Property fit is assessed before a lead is delivered</div></div>
+          <div class="compare-row"><div>Marketing spend can reach many unsuitable households</div><div>Builds a more focused audience for targeted outreach</div></div>
         </div>
-        <div class="case-grid">
-          <article class="case-card reveal"><span class="case-tag">Illustrative pilot</span><h3>Solar installer,<br>South West</h3><p>Replaced postcode-wide door drops with homes selected for roof area, orientation and local coverage.</p><div class="case-metrics"><div><strong>840</strong><span>properties reviewed</span></div><div><strong>214</strong><span>verified matches</span></div></div></article>
-          <article class="case-card reveal"><span class="case-tag">Illustrative pilot</span><h3>Roofing group,<br>North West</h3><p>Built a focused audience around the property signals most likely to indicate a suitable roofing project.</p><div class="case-metrics"><div><strong>4×</strong><span>tighter target area</span></div><div><strong>0</strong><span>duplicate addresses</span></div></div></article>
-          <article class="case-card reveal"><span class="case-tag">Illustrative pilot</span><h3>EV installer,<br>Home Counties</h3><p>Prioritised properties with off-street parking and the visible space needed for a straightforward installation.</p><div class="case-metrics"><div><strong>3</strong><span>areas compared</span></div><div><strong>126</strong><span>campaign-ready leads</span></div></div></article>
+        <p class="comparison-note">LOCAYTER identifies property characteristics that may indicate a fit for your service. A match does not establish homeowner interest, purchase intent or guaranteed suitability; your sales process remains essential.</p>
+
+        <div class="offgrid-case reveal" id="offgrid-pro">
+          <div class="offgrid-case-intro">
+            <p class="eyebrow section-kicker">Customer case study</p>
+            <p class="case-brand">OFFGRID PRO</p>
+            <h3>Property intelligence, applied to a real-world customer brief.</h3>
+            <p class="lead">A closer look at how a property-led approach can help a specialist business focus its prospecting around the characteristics that matter to its offer.</p>
+          </div>
+          <div class="offgrid-case-detail">
+            <div><span class="case-detail-number">01</span><h4>The opportunity</h4><p>Build a prospecting audience around relevant property characteristics, rather than relying solely on broad geographic targeting.</p></div>
+            <div><span class="case-detail-number">02</span><h4>The LOCAYTER approach</h4><p>Translate the customer’s ideal property profile into search criteria, analyse the selected area and apply human quality checks to potential matches.</p></div>
+            <div><span class="case-detail-number">03</span><h4>The outcome</h4><p>Use the resulting property-level intelligence to give the sales team a more focused starting point for outreach. Add approved campaign figures and a customer quotation here when signed off.</p></div>
+          </div>
+          <p class="case-note">Case-study narrative shown without performance claims. Add OffGrid Pro-approved campaign scope, verified results and testimonial before publishing quantified outcomes.</p>
         </div>
-        <p class="case-note">Figures are illustrative placeholders for the first website version. Replace them with verified customer outcomes before launch.</p>
       </div>
     </section>
 
     <section class="about" id="about">
       <div class="container about-grid">
         <div class="about-copy reveal">
-          <p class="eyebrow section-kicker">About us</p>
-          <h2>We think LOCAYTER should begin with fit, not clicks.</h2>
-          <p class="lead">LOCAYTER Tool was built around a simple idea: when a service depends on the physical shape of a property, the property itself should be the first filter. We combine large-scale technology with human judgement so sales teams spend less time qualifying and more time selling.</p>
-          <a class="button button-dark" href="#pricing">Put it to work</a>
+          <p class="eyebrow section-kicker">About LOCAYTER</p>
+          <h2>Better targeting starts with the property.</h2>
+          <p class="lead">LOCAYTER is a property intelligence platform built for businesses whose customers can be identified, in part, by the physical characteristics of their homes. We combine satellite-image analysis, configurable search criteria and human verification to help commercial teams focus their prospecting.</p>
+          <a class="button button-dark" href="#contact">Let’s talk</a>
         </div>
         <div class="about-values reveal">
-          <article class="value"><span class="value-icon">01</span><h3>Specific by design</h3><p>Your targeting logic is built around your service, territory and ideal job.</p></article>
-          <article class="value"><span class="value-icon">02</span><h3>Human checked</h3><p>Technology does the scale; people provide the final quality-control layer.</p></article>
-          <article class="value"><span class="value-icon">03</span><h3>Easy to act on</h3><p>Clean addresses, clear campaign status and no unnecessary data clutter.</p></article>
-          <article class="value"><span class="value-icon">04</span><h3>Built around ROI</h3><p>Spend the budget reaching plausible customers, not every home in a postcode.</p></article>
+          <article class="value"><span class="value-icon">01</span><h3>Property-level insight</h3><p>Move beyond broad areas and assess individual properties against a defined brief.</p></article>
+          <article class="value"><span class="value-icon">02</span><h3>Configurable technology</h3><p>Adapt image analysis to the physical signals that matter across different sectors.</p></article>
+          <article class="value"><span class="value-icon">03</span><h3>Human quality control</h3><p>Potential matches are checked against the agreed criteria before delivery.</p></article>
+          <article class="value"><span class="value-icon">04</span><h3>Built for action</h3><p>Turn property insight into a practical audience for sales and marketing activity.</p></article>
         </div>
       </div>
     </section>
@@ -322,7 +322,7 @@
       <div class="container cta-panel reveal">
         <div class="cta-grid">
           <div><p class="eyebrow">Your first campaign</p><h2>Tell us what a perfect property looks like.</h2><p>We’ll turn your territory, service and property signals into a clear pilot brief.</p></div>
-          <div class="cta-actions"><a class="button button-dark" href="mailto:hello@leadgentool.co.uk?subject=Lead%20Gen%20Tool%20discovery%20call">Book a discovery call</a><a class="text-link" href="#pricing">Compare plans</a><small>No obligation · Speak to the team</small></div>
+          <div class="cta-actions"><a class="button button-dark" href="mailto:hello@locayter.com?subject=LOCAYTER%20enquiry">Book a discovery call</a><a class="text-link" href="#pricing">Compare plans</a><small>No obligation · Speak to the team</small></div>
         </div>
       </div>
     </section>
@@ -332,7 +332,7 @@
     <div class="container">
       <div class="footer-top">
         <div><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><img src="assets/locayter-logo.png" alt="" width="1536" height="1024"></span><span>LOCAYTER</span></a><p class="footer-copy">Property-level lead generation for teams that sell to homes.</p></div>
-        <nav class="footer-links" aria-label="Footer navigation"><a href="#product">Product</a><a href="#results">Results</a><a href="#industries">Industries</a><a href="#cases">Case studies</a><a href="#about">About us</a><a href="#pricing">Pricing</a></nav>
+        <nav class="footer-links" aria-label="Footer navigation"><a href="#how-it-works">How it works</a><a href="#why-locayter">Why Locayter</a><a href="#pricing">Pricing</a><a href="#about">About</a></nav>
       </div>
       <div class="footer-bottom"><span>© 2026 LOCAYTER Tool. All rights reserved.</span><span>Privacy · Terms · Contact</span></div>
     </div>
@@ -349,14 +349,14 @@
         <button class="chat-question" type="button" data-answer="Basic suits a first market test, Professional supports repeat campaigns across multiple locations, and Enterprise offers bespoke targeting and larger territories.">Which plan is right for me?</button>
         <button class="chat-question" type="button" data-answer="Basic is £299/month for 500 properties. Professional is £749/month for 2,000 properties. Enterprise starts from £1,995 for 5,000+ properties per month, with tailored pricing. Allowances reset monthly and do not roll over.">How much does it cost?</button>
         <button class="chat-question" type="button" data-answer="If your ideal customer leaves visible clues on their property-such as roof size, outdoor space or off-street parking-we can build a focused search around them.">Can you find my customers?</button>
-        <a class="chat-question call" href="mailto:hello@leadgentool.co.uk?subject=Lead%20Gen%20Tool%20discovery%20call">Book a call</a>
+        <a class="chat-question call" href="mailto:hello@locayter.com?subject=LOCAYTER%20enquiry">Book a call</a>
       </div>
     </div>
   </aside>
 
   <dialog class="calculator-dialog" id="calculatorDialog" aria-labelledby="calculatorTitle">
     <div class="calculator-top">
-      <div class="calculator-brand"><span class="brand-mark" aria-hidden="true"><img src="assets/locayter-logo.png" alt="" width="1536" height="1024"></span>LEAD VALUE CALCULATOR</div>
+      <div class="calculator-brand"><span class="brand-mark" aria-hidden="true"><img src="assets/locayter-logo.png" alt="" width="1536" height="1024"></span>LOCAYTER LEAD VALUE CALCULATOR</div>
       <button class="calculator-close" id="calculatorClose" type="button" aria-label="Close calculator">×</button>
     </div>
     <div class="calculator-progress" aria-hidden="true"><i id="calculatorProgress"></i></div>
@@ -429,23 +429,76 @@
     }));
 
     const finder = document.getElementById('finder');
+    const demoForm = document.getElementById('postcodeDemoForm');
+    const postcodeInput = document.getElementById('demoPostcode');
     const scanButton = document.getElementById('scanButton');
-    const scanLabel = document.getElementById('scanLabel');
-    const scanResult = document.getElementById('scanResult');
+    const scanLabel = document.getElementById('demoMapStatus');
+    const demoResult = document.getElementById('demoResult');
+    const demoMatchCount = document.getElementById('demoMatchCount');
+    const demoResultCopy = document.getElementById('demoResultCopy');
+    const demoTargets = document.getElementById('demoTargets');
+    const demoOptions = document.querySelectorAll('.demo-option');
+    let selectedDemoType = 'solar';
     let scanTimer;
-    scanButton.addEventListener('click', () => {
+
+    const demoTypes = {
+      solar: { label: 'solar opportunities', counts: [38, 52, 67, 84, 91] },
+      renovation: { label: 'renovation opportunities', counts: [24, 36, 49, 58, 73] },
+      pools: { label: 'potential swimming pool opportunities', counts: [12, 18, 26, 31, 44] }
+    };
+
+    demoOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        demoOptions.forEach(item => {
+          item.classList.remove('active');
+          item.setAttribute('aria-pressed', 'false');
+        });
+        option.classList.add('active');
+        option.setAttribute('aria-pressed', 'true');
+        selectedDemoType = option.dataset.demoType;
+        demoResult.hidden = true;
+        finder.classList.remove('scanned', 'scanning');
+        scanLabel.textContent = 'Your selected area will appear here';
+      });
+    });
+
+    function validUkPostcode(value) {
+      const compact = value.replace(/\s+/g, '').toUpperCase();
+      return /^(GIR0AA|(?:[A-Z]{1,2}[0-9][A-Z0-9]?)[0-9][A-Z]{2})$/.test(compact);
+    }
+
+    demoForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const postcode = postcodeInput.value.trim().toUpperCase();
+      if (!validUkPostcode(postcode)) {
+        postcodeInput.setCustomValidity('Enter a valid UK postcode, for example BH14 8NX.');
+        postcodeInput.reportValidity();
+        return;
+      }
+      postcodeInput.setCustomValidity('');
       window.clearTimeout(scanTimer);
+      demoResult.hidden = true;
       finder.classList.remove('scanned');
-      scanLabel.textContent = 'Scanning Bristol area…';
-      scanResult.textContent = '0';
+      finder.classList.add('scanning');
       scanButton.disabled = true;
+      scanButton.textContent = 'Scanning…';
+      scanLabel.textContent = `Scanning ${postcode}…`;
+      demoTargets.classList.remove('show-targets');
       requestAnimationFrame(() => finder.classList.add('scanned'));
+
       scanTimer = window.setTimeout(() => {
-        scanLabel.textContent = 'High-confidence matches';
-        scanResult.textContent = '214';
-        scanButton.textContent = 'Scan complete - view 214 matches';
+        const counts = demoTypes[selectedDemoType].counts;
+        const count = counts[Math.floor(Math.random() * counts.length)];
+        finder.classList.remove('scanning');
+        finder.classList.add('scanned');
+        demoTargets.classList.add('show-targets');
+        scanLabel.textContent = `Scan preview complete · ${postcode}`;
+        demoMatchCount.textContent = count;
+        demoResultCopy.textContent = `${count} fictional ${demoTypes[selectedDemoType].label} shown in this illustrative preview for ${postcode}.`;
+        demoResult.hidden = false;
         scanButton.disabled = false;
-      }, 1150);
+        scanButton.textContent = 'Scan again';
+      }, 1850);
     });
 
     const featureCopy = document.getElementById('featureCopy');
