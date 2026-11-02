@@ -514,3 +514,22 @@ footer { padding: 48px 0 34px; color: var(--white); background: var(--navy); }
   .calculator-actions.end { align-items: stretch; }
   .calculator-actions .button { width: 100%; }
 }
+
+/* Customer demo video player */
+body.demo-video-open { overflow: hidden; }
+.demo-video-dialog {
+  width: min(1100px, calc(100vw - 32px)); max-width: none;
+  max-height: calc(100dvh - 32px); margin: auto; padding: 0;
+  border: 1px solid rgba(255,255,255,.18); border-radius: 18px;
+  background: var(--navy); color: var(--white); overflow: auto;
+  box-shadow: 0 28px 90px rgba(0,0,0,.4);
+}
+.demo-video-dialog::backdrop { background: rgba(7,17,32,.84); }
+.demo-video-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 22px; }
+.demo-video-heading h2 { margin: 0; font-size: clamp(1.15rem, 3vw, 1.5rem); line-height: 1.2; letter-spacing: -.02em; }
+.demo-video-close { flex: 0 0 44px; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; background: transparent; color: white; font-size: 28px; cursor: pointer; }
+.demo-video-close:hover { background: rgba(255,255,255,.12); }
+.demo-video-close:focus-visible { outline: 3px solid var(--aqua); outline-offset: 3px; }
+.demo-video-player { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: calc(100dvh - 200px); background: #0f1d34; object-fit: contain; }
+.demo-video-caption { margin: 0; padding: 16px 22px 20px; font-size: .86rem; line-height: 1.5; color: rgba(255,255,255,.75); }
+.demo-video-caption a { color: var(--aqua); text-decoration: underline; }

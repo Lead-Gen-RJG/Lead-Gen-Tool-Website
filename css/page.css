@@ -1,0 +1,520 @@
+/* Page-specific components and responsive refinements. Loaded after styles.css. */
+/* Compact interactive preview: reuses the original Live Product Preview criterion and toggle styles. */
+.demo-criteria { margin:18px 0 14px; }
+.demo-filter { width:100%; cursor:pointer; text-align:left; color:inherit; font:inherit; border:0; background:transparent; }
+/* Self-contained switch; avoids legacy .toggle pseudo-elements and positioning rules. */
+.demo-filter .demo-switch {
+  display:block; position:relative; flex:0 0 38px; width:38px; min-width:38px;
+  max-width:38px; height:22px; min-height:22px; border-radius:999px;
+  box-sizing:border-box; overflow:hidden; background:#8994a5;
+  box-shadow:inset 0 0 0 1px rgba(15,29,52,.12);
+  transition:background-color .22s ease,box-shadow .22s ease;
+}
+.demo-filter .demo-switch-thumb {
+  display:block; position:absolute; box-sizing:border-box;
+  top:3px; left:3px; width:16px; height:16px; min-width:16px;
+  border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.24);
+  transform:translateX(0); transition:transform .22s cubic-bezier(.2,.8,.2,1);
+  pointer-events:none;
+}
+.demo-filter.active .demo-switch { background:#164271; box-shadow:inset 0 0 0 1px rgba(255,255,255,.1); }
+.demo-filter.active .demo-switch-thumb { transform:translateX(16px); }
+.demo-filter:focus-visible { outline:2px solid #58a6ff; outline-offset:3px; border-radius:8px; }
+.postcode-compact { display:flex; align-items:center; gap:14px; margin:12px 0; }
+.postcode-compact label { flex:0 0 105px; font-size:12px; font-weight:700; }
+.postcode-compact input {
+  display:block; flex:1 1 auto; box-sizing:border-box; width:100%; min-width:0;
+  padding:11px 12px; border:2px solid #87bfff !important; border-radius:8px;
+  background:#fff !important; color:#0f1d34 !important; font:inherit;
+  text-transform:uppercase; outline:none; box-shadow:0 0 0 1px rgba(15,29,52,.07);
+}
+.postcode-compact input:focus { border-color:#2878e5 !important; box-shadow:0 0 0 3px rgba(40,120,229,.22); }
+.postcode-compact input[aria-invalid="true"] { border-color:#ff675c !important; }
+.postcode-compact input::placeholder { color:#768397 !important; opacity:1; text-transform:none; }
+.demo-postcode-error { margin:0 0 8px; color:#ffb5ae; font-size:12px; line-height:1.4; }
+.demo-postcode-error[hidden], .preview-form[hidden] { display:none !important; }
+.demo-input-note { margin:8px 0 0; color:rgba(255,255,255,.58); font-size:11px; line-height:1.45; }
+.demo-map-stage[hidden], .demo-result[hidden] { display:none; }
+.demo-map-stage { animation:demoReveal .42s ease both; }
+/* Real UK street map with OpenFreeMap vector tiles and offline-friendly fallback. */
+.demo-map-wrap {
+  position:relative; height:238px; margin:15px 0 12px; overflow:hidden;
+  border:1px solid rgba(115,228,225,.20); border-radius:11px;
+  background:#17293a; isolation:isolate;
+  box-shadow:0 15px 30px rgba(3,15,29,.13);
+}
+.demo-real-map { position:absolute; inset:0; z-index:1; background:#182a3b; }
+.demo-real-map { touch-action:pan-y; overflow:hidden; user-select:none; }
+.demo-vector-map { position:absolute; inset:0; width:100%; height:100%; z-index:1; }
+.demo-real-map.is-fallback .demo-vector-map { visibility:hidden; }
+.demo-real-map:not(.is-fallback) .demo-map-overlay { display:none; }
+.demo-tile-layer { display:none !important; } /* legacy OSM raster tile URLs removed */
+.demo-map-overlay { position:absolute; inset:0; width:100%; height:100%; overflow:hidden; pointer-events:none; }
+.demo-vector-map .maplibregl-canvas { outline:none; }
+.demo-vector-map .maplibregl-control-container { display:none; } /* attribution shown by own visible footer */
+.demo-real-map.is-fallback { background:#17293a linear-gradient(180deg,rgba(7,19,34,.08),rgba(7,19,34,.25)), none center/cover no-repeat; }
+.demo-real-map.is-fallback .demo-tile-layer { display:none; }
+.demo-real-map.is-fallback .demo-map-overlay { opacity:1; }
+.demo-zoom-controls { position:absolute; right:10px; top:48px; z-index:7; display:grid; gap:5px; }
+.demo-zoom-controls button { width:29px; height:29px; padding:0; border:1px solid rgba(174,213,226,.3); border-radius:7px; color:#fff; background:rgba(9,25,42,.90); font:700 18px/1 inherit; cursor:pointer; }
+.demo-zoom-controls button:focus-visible { outline:2px solid #73e4e1; outline-offset:2px; }
+.demo-real-map.is-fallback + .demo-zoom-controls { display:none; }
+.demo-map-wrap::after {
+  content:""; pointer-events:none; position:absolute; inset:0; z-index:2;
+  box-shadow:inset 0 0 28px rgba(5,18,30,.19);
+}
+.demo-map-toolbar { position:absolute; z-index:7; top:11px; left:11px; right:11px; display:flex; justify-content:flex-end; align-items:center; gap:7px; pointer-events:none; }
+.demo-map-chip { display:inline-flex; align-items:center; gap:7px; padding:7px 10px; background:rgba(9,25,42,.88); border:1px solid rgba(174,213,226,.22); border-radius:7px; color:#ebf5fa; font-size:10px; font-weight:700; letter-spacing:.025em; backdrop-filter:blur(10px); box-shadow:0 3px 9px rgba(0,0,0,.11); }
+.demo-map-chip::before { content:""; width:6px; height:6px; border-radius:50%; background:#73e4e1; box-shadow:0 0 0 3px rgba(115,228,225,.12); }
+.demo-map-counter { font-variant-numeric:tabular-nums; color:#bbdedf; font-weight:600; }
+.demo-map-counter::before { display:none; }
+.demo-scan-beam { position:absolute; pointer-events:none; z-index:4; top:0; bottom:0; left:-5%; width:2px; opacity:0; background:rgba(115,228,225,.92); box-shadow:0 0 17px 6px rgba(115,228,225,.24),0 0 52px 16px rgba(115,228,225,.08); }
+.finder.scanning .demo-scan-beam { opacity:1; animation:locayterScan 1.5s ease-in-out infinite alternate; }
+@keyframes locayterScan { from { left:-5%; } to { left:105%; } }
+.demo-map-loader { position:absolute; z-index:6; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; color:#e5f2f7; font-size:12px; background:rgba(11,27,43,.57); backdrop-filter:blur(3px); text-align:center; padding:20px; line-height:1.5; }
+.demo-map-loader[hidden] { display:none; }
+.demo-map-loader::before { content:""; height:21px; width:21px; border:2px solid rgba(115,228,225,.25); border-top-color:#73e4e1; border-radius:50%; animation:locayterSpinner 1s linear infinite; }
+.demo-map-loader.is-error::before { display:none; }
+@keyframes locayterSpinner { to { transform:rotate(360deg); } }
+.demo-map-status { position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0,0,0,0) !important; white-space:nowrap !important; border:0 !important; }
+.demo-map-attribution { position:absolute; z-index:7; right:7px; bottom:7px; padding:3px 5px; background:rgba(9,25,42,.76); border-radius:4px; color:rgba(236,246,251,.87); font-size:8px; line-height:1.4; text-shadow:0 1px 2px rgba(0,0,0,.4); }
+.demo-map-attribution[hidden] { display:none !important; }
+.demo-map-attribution a { color:#d9eef7; text-decoration:none; }
+.demo-map-attribution a:hover { text-decoration:underline; }
+.demo-map-disclaimer { margin:0 0 10px; color:rgba(255,255,255,.59); font-size:10px; line-height:1.45; }
+@media(prefers-reduced-motion:reduce) { .finder.scanning .demo-scan-beam { animation:none; }.demo-map-loader::before { animation:none; } }
+.demo-result { display:grid; grid-template-columns:auto 1fr; align-items:center; gap:4px 14px; margin:0 0 8px; padding:12px; border:1px solid rgba(255,255,255,.14); border-radius:9px; background:rgba(255,255,255,.04); }
+.demo-result-label { display:block; color:rgba(255,255,255,.68); font-size:10px; }.demo-result strong { display:block; color:#c8ff4d; font-size:27px; line-height:1.1; }.demo-result p { margin:0; font-size:11px; line-height:1.4; }.demo-result .button { grid-column:1/-1; justify-self:start; margin-top:6px; }
+
+/* The bundled roads are a real img layer, not a background shorthand that can be overwritten. */
+#demoRealMap .demo-street-image {
+  position:absolute !important; inset:0 !important; z-index:0 !important;
+  display:block !important; width:100% !important; height:100% !important;
+  max-width:none !important; max-height:none !important;
+  object-fit:cover !important; object-position:center !important;
+  opacity:1 !important; visibility:visible !important; filter:none !important;
+  pointer-events:none !important;
+}
+#demoRealMap:not(.is-fallback) .demo-street-image { display:none !important; }
+#demoRealMap.is-fallback .demo-street-image { display:block !important; }
+#demoRealMap.is-fallback .demo-vector-map { visibility:hidden !important; }
+#demoRealMap.is-fallback .demo-map-overlay { z-index:3 !important; }
+/* Result: one centred number, one sentence, one clear conversion action. */
+#demoResult.demo-result {
+  display:flex !important; flex-direction:column !important; align-items:center !important;
+  justify-content:center !important; gap:9px !important;
+  text-align:center !important; padding:17px 16px 16px !important;
+  margin:0 0 10px !important;
+  border:1px solid rgba(115,228,225,.22) !important;
+  border-radius:11px !important; background:rgba(115,228,225,.045) !important;
+}
+#demoResult[hidden] { display:none !important; }
+#demoMatchCount {
+  display:block !important; width:100% !important; text-align:center !important;
+  font-variant-numeric:tabular-nums; font-size:clamp(34px,4vw,43px) !important;
+  font-weight:800 !important; line-height:1.05 !important; color:#c8ff4d !important;
+}
+#demoResultCopy { max-width:310px; margin:0 auto !important; color:#e6eef7;
+  font-size:12px !important; line-height:1.5 !important; }
+#demoResult .demo-unlock {
+  display:flex !important; justify-content:center !important; align-items:center !important;
+  width:100% !important; max-width:300px !important;
+  box-sizing:border-box !important; margin:6px 0 0 !important;
+  padding:11px 17px !important; text-align:center !important;
+}
+.demo-reset { border:0; padding:4px 0; background:none; color:rgba(255,255,255,.72); font:inherit; font-size:11px; cursor:pointer; }
+@keyframes demoReveal { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+@media(max-width:760px) { .postcode-compact { align-items:stretch; flex-direction:column; gap:6px; }.postcode-compact label { flex:auto; } }
+.comparison-note { max-width:850px; margin:14px auto 48px; color:var(--muted,#667085); font-size:13px; line-height:1.65; }
+.offgrid-case { display:grid; grid-template-columns:.8fr 1.2fr; gap:36px; padding:clamp(24px,4vw,46px); border-radius:18px; background:#0f1d34; color:#fff; }
+.offgrid-case .section-kicker { color:#c8ff4d; }.case-brand { margin:18px 0 10px; color:#c8ff4d; font-size:13px; font-weight:800; letter-spacing:.18em; }
+.offgrid-case-intro h3 { max-width:440px; margin:0 0 14px; font-size:clamp(25px,3vw,36px); line-height:1.12; }
+.offgrid-case-intro .lead { color:rgba(255,255,255,.7); font-size:15px; }
+.offgrid-case-detail { display:grid; grid-template-columns:1fr; gap:18px; }
+.offgrid-case-detail>div { padding:0 0 16px; border-bottom:1px solid rgba(255,255,255,.14); }
+.case-detail-number { color:#c8ff4d; font-size:11px; font-weight:800; letter-spacing:.12em; }
+.offgrid-case-detail h4 { margin:5px 0; font-size:17px; }.offgrid-case-detail p,.offgrid-case .case-note { margin:0; color:rgba(255,255,255,.68); font-size:13px; line-height:1.6; }
+.offgrid-case .case-note { grid-column:1/-1; padding-top:14px; border-top:1px solid rgba(255,255,255,.14); font-size:11px; }
+@media(max-width:760px) { .postcode-entry { flex-direction:column; }.postcode-entry .button { width:100%; }.offgrid-case { grid-template-columns:1fr; gap:22px; } }
+
+/* V11: premium compact scan state, no hero-height increase. */
+#demoMapStage { position:relative; margin:0 !important; padding:0 !important; }
+#demoMapStage .demo-map-wrap { height:264px !important; margin:12px 0 0 !important; border-radius:11px; }
+#demoRealMap.is-fallback {background:#102639 !important;}
+#demoRealMap.is-fallback #demoMapOverlay {display:none !important;} /* map image already depicts example pins */
+#demoRealMap .demo-street-image {object-fit:cover !important; object-position:center center !important;}
+#demoMapStage .demo-map-disclaimer {display:none !important;}
+#demoMapStage #demoReset {
+  position:absolute !important; z-index:13 !important; right:11px !important; top:10px !important;
+  margin:0 !important; padding:7px 9px !important;
+  border:1px solid rgba(192,226,236,.23) !important;
+  border-radius:7px !important; color:#f5fafc !important;
+  background:rgba(9,27,45,.90) !important; backdrop-filter:blur(8px);
+  font-size:11px !important; line-height:1.1 !important;
+}
+#demoMapStage #demoReset:hover {background:rgba(18,54,75,.96) !important;}
+#demoMapStage .demo-map-toolbar {top:10px !important;left:10px !important;right:auto !important;}
+#demoMapStage #demoMapLocation {background:rgba(9,27,45,.88) !important;}
+#demoMapStage #demoMapAttribution {bottom:82px !important;right:8px !important;}
+#demoMapStage #demoResult.demo-result {
+  position:absolute !important; left:10px !important; right:10px !important; bottom:10px !important;
+  z-index:12 !important; width:auto !important; box-sizing:border-box !important;
+  display:grid !important; grid-template-columns:auto minmax(0,1fr) auto !important;
+  align-items:center !important; justify-items:stretch !important;
+  gap:8px 10px !important; margin:0 !important; padding:10px 11px !important;
+  min-height:68px !important; border:1px solid rgba(157,192,211,.27) !important;
+  border-radius:9px !important; background:rgba(9,26,44,.94) !important;
+  box-shadow:0 6px 22px rgba(3,12,23,.30) !important;
+  backdrop-filter:blur(14px); text-align:left !important;
+}
+#demoMapStage #demoResult[hidden] {display:none !important;}
+#demoMapStage #demoMatchCount {
+  display:block !important; width:auto !important; min-width:42px !important;
+  font-size:31px !important; font-weight:800 !important;
+  line-height:1.1 !important; letter-spacing:-.05em !important;
+  color:#c8ff4d !important; text-align:left !important;
+  font-variant-numeric:tabular-nums;
+}
+#demoMapStage #demoResultCopy {
+  display:block !important; min-width:0 !important; max-width:none !important;
+  margin:0 !important; color:#e7f1f6 !important;
+  font-size:10.5px !important; line-height:1.35 !important;
+  text-align:left !important; overflow-wrap:normal !important;
+}
+#demoMapStage #demoResult .demo-unlock {
+  grid-column:auto !important; justify-self:end !important;
+  display:inline-flex !important; width:auto !important; max-width:none !important;
+  margin:0 !important; padding:10px 11px !important; min-height:0 !important;
+  box-sizing:border-box !important; border-radius:7px !important;
+  font-size:10.5px !important; line-height:1.1 !important;
+  text-align:center !important; white-space:nowrap !important;
+}
+@media(max-width:490px) {
+  #demoMapStage .demo-map-wrap {height:282px !important;}
+  #demoMapStage #demoResult.demo-result {
+    grid-template-columns:auto minmax(0,1fr) !important; gap:7px 10px !important;
+    min-height:0 !important; padding:9px 10px !important;
+  }
+  #demoMapStage #demoMatchCount {font-size:29px !important;}
+  #demoMapStage #demoResultCopy {font-size:10px !important;}
+  #demoMapStage #demoResult .demo-unlock {
+    grid-column:1 / -1 !important; justify-self:stretch !important;
+    width:100% !important; padding:8px 10px !important;
+  }
+}
+
+/* V13: animated standalone property pins; the map photo contains no fixed red targets. */
+#demoRealMap.is-fallback #demoMapOverlay {
+  display:block !important; z-index:3 !important; opacity:1 !important;
+}
+#demoMapOverlay .demo-target { opacity:0; transform-box:fill-box; transform-origin:center;
+  animation:locayterTargetAppear .45s cubic-bezier(.2,.8,.2,1.12) both;
+  animation-delay:var(--target-delay,0s);
+}
+#demoMapOverlay .demo-target-pulse {
+  fill:none; stroke:#ff675c; stroke-width:1.8px; opacity:0;
+  transform-box:fill-box; transform-origin:center;
+  animation:locayterTargetPulse 2.5s ease-out infinite;
+  animation-delay:calc(var(--target-delay,0s) + .35s);
+}
+#demoMapOverlay .demo-target-glow { fill:#ff675c; fill-opacity:.20; }
+#demoMapOverlay .demo-target-core { fill:#ff675c; stroke:#f6fbff; stroke-width:1.15px; }
+@keyframes locayterTargetAppear {
+  from { opacity:0; transform:scale(.25); }
+  75% { opacity:1; transform:scale(1.18); }
+  to { opacity:1; transform:scale(1); }
+}
+@keyframes locayterTargetPulse {
+  0% { opacity:.75; transform:scale(.55); }
+  75%,100% { opacity:0; transform:scale(3.3); }
+}
+@media(prefers-reduced-motion:reduce) {
+  #demoMapOverlay .demo-target { opacity:1; animation:none; }
+  #demoMapOverlay .demo-target-pulse { display:none; }
+}
+
+/* V16: relocate the ORIGINAL lime ribbon supplied by styles.css.
+   The original .finder::after badge remains unchanged except for its position. */
+#finder { position:relative; overflow:visible !important; }
+#finder::after {
+  top:-15px !important;
+  bottom:auto !important;
+  right:20px !important;
+  left:auto !important;
+  z-index:10;
+}
+
+
+/* V17: marketing copy sections. All existing preview styles remain unchanged. */
+.example-strip { background:#f3f7fa; border-top:1px solid rgba(15,29,52,.06); border-bottom:1px solid rgba(15,29,52,.08); }
+.example-strip-inner { display:grid; grid-template-columns:1fr 1fr; gap:clamp(22px,5vw,72px); align-items:center; padding-top:clamp(32px,4.5vw,58px); padding-bottom:clamp(32px,4.5vw,58px); }
+.example-strip .section-kicker { color:#3c6680; }
+.example-strip h2 { margin:9px 0 0; font-size:clamp(25px,3vw,39px); line-height:1.16; letter-spacing:-.035em; color:#102338; }
+.example-strip h2 span { color:#2878e5; }
+.example-detail p { margin:0 0 13px; color:#435b6f; font-size:clamp(14px,1.3vw,16px); line-height:1.7; }
+.example-detail strong { color:#102338; }
+.example-detail .example-takeaway { margin:16px 0 0; font-size:13px; font-weight:750; color:#1a5576; }
+.steps-closing { margin:24px auto 0; text-align:center; color:#536578; font-size:15px; }
+.steps-closing strong { color:#163951; }
+.sector-showcase { margin:clamp(40px,6vw,72px) 0 0; }
+.sector-showcase-heading { max-width:790px; margin:0 0 20px; }
+.sector-showcase-heading h3 { margin:7px 0 0; font-size:clamp(23px,2.5vw,34px); line-height:1.2; letter-spacing:-.025em; }
+.sector-examples { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:17px; }
+.sector-examples article { border:1px solid rgba(15,29,52,.12); background:#f6f9fb; border-radius:13px; padding:23px 21px; }
+.sector-tag { display:inline-block; padding:5px 8px; color:#275c77; background:#e4f1f6; font-size:10px; font-weight:800; border-radius:5px; letter-spacing:.04em; text-transform:uppercase; }
+.sector-examples h4 { margin:15px 0 8px; font-size:17px; color:#102338; }
+.sector-examples p { margin:0; color:#526577; font-size:13px; line-height:1.6; }
+.sector-note { margin:13px 0 0; color:#637486; font-size:11px; line-height:1.5; }
+.about-second { color:#627285; margin:0 0 24px; line-height:1.65; font-size:14px; }
+@media(max-width:760px) { .example-strip-inner { grid-template-columns:1fr; gap:15px; }.sector-examples { grid-template-columns:1fr; }.sector-examples article { padding:19px; } }
+
+
+/* V18: the OffGrid Pro origin sits below the hero; Why LOCAYTER is now benefits-led. */
+#why-locayter .comparison-note { margin-bottom:0; }
+#why-locayter .sector-showcase { margin-top:clamp(32px,4vw,50px); }
+
+/* V19 — OffGrid Pro real customer case study; preview component deliberately untouched. */
+.ogp-case-study { padding:clamp(48px,6vw,90px) 0; background:#f2f6f9; }
+.ogp-case-shell { overflow:hidden; border:1px solid rgba(31,58,80,.12); border-radius:20px; background:#101f34; color:#f4f8fb; box-shadow:0 18px 46px rgba(8,25,44,.10); }
+.ogp-case-hero { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); min-height:360px; }
+.ogp-case-intro { padding:clamp(28px,4.5vw,57px); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; }
+.ogp-kicker { color:#a1e0e8 !important; font-size:11px !important; letter-spacing:.13em !important; font-weight:800 !important; }
+.ogp-kicker span { margin:0 5px; opacity:.7; }
+.ogp-case-intro h2 { font-size:clamp(30px,3.1vw,49px); line-height:1.06; letter-spacing:-.045em; margin:16px 0 18px; color:#fff; }
+.ogp-case-intro h2 span { color:#c8ff4d; }
+.ogp-subtitle { max-width:555px; font-size:clamp(16px,1.55vw,20px); line-height:1.46; font-weight:650; color:#e4edf4; margin:0 0 16px; }
+.ogp-summary { max-width:570px; font-size:13px; line-height:1.7; margin:0; color:#bccdda; }
+.ogp-specialism { margin-top:22px; font-size:10px; line-height:1.45; font-weight:800; text-transform:uppercase; letter-spacing:.1em; color:#a3c7d5; }
+.ogp-specialism span { padding:0 5px; color:#c8ff4d; }
+.ogp-case-photo { position:relative; overflow:hidden; min-height:330px; margin:0; background:#25384b; }
+.ogp-case-photo img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 50%; display:block; }
+.ogp-case-photo:after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg,rgba(8,20,33,.20),transparent 36%),linear-gradient(0deg,rgba(7,20,34,.65),transparent 25%); }
+.ogp-case-photo figcaption { position:absolute; z-index:1; right:15px; bottom:13px; font-size:10px; font-weight:750; color:#fff; padding:6px 9px; background:rgba(10,24,38,.75); border:1px solid rgba(255,255,255,.2); border-radius:5px; }
+.ogp-case-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid rgba(255,255,255,.11); border-bottom:1px solid rgba(255,255,255,.11); background:#142940; }
+.ogp-case-stat { padding:26px 22px 23px; min-height:104px; display:flex; flex-direction:column; gap:8px; align-items:flex-start; justify-content:center; }
+.ogp-case-stat + .ogp-case-stat { border-left:1px solid rgba(255,255,255,.13); }
+.ogp-case-stat strong { color:#c8ff4d; font-variant-numeric:tabular-nums; font-size:clamp(29px,3.2vw,45px); line-height:1; letter-spacing:-.045em; font-weight:800; white-space:nowrap; }
+.ogp-case-stat strong small { font-size:.4em; letter-spacing:-.015em; font-weight:750; }
+.ogp-case-stat strong sup { font-size:.42em; vertical-align:super; }
+.ogp-case-stat span { color:#c6d5e0; font-size:12px; line-height:1.45; }
+.ogp-figures-note { padding:12px clamp(22px,4vw,50px); margin:0; color:#b8c9d6; font-size:11px; line-height:1.6; background:#172b42; }
+.ogp-figures-note strong { color:#f1f7fa; }
+.ogp-case-narrative { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(18px,2.5vw,35px); padding:clamp(27px,4vw,48px); }
+.ogp-case-narrative>div + div { border-left:1px solid rgba(255,255,255,.13); padding-left:clamp(18px,2.5vw,35px); }
+.ogp-story-label { margin:0 0 11px; color:#a1e0e8; font-size:10px; font-weight:850; letter-spacing:.14em; text-transform:uppercase; }
+.ogp-case-narrative h3 { margin:0 0 12px; color:#f4f9fb; font-size:19px; line-height:1.2; letter-spacing:-.02em; }
+.ogp-case-narrative p:not(.ogp-story-label) { margin:0; color:#bacbd8; font-size:12px; line-height:1.75; }
+.ogp-case-narrative strong { color:#f0f6fb; }
+.ogp-case-quote-panel { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:clamp(24px,4vw,44px); align-items:center; margin:0 clamp(27px,4vw,48px); padding:clamp(25px,3vw,34px) 0; border-top:1px solid rgba(255,255,255,.15); }
+.ogp-case-quote-panel blockquote { margin:0; padding:0; border:0; max-width:810px; }
+.ogp-case-quote-panel blockquote p { font-size:clamp(15px,1.5vw,19px); line-height:1.55; font-weight:580; color:#eef6f9; margin:0 0 13px; }
+.ogp-case-quote-panel blockquote cite { display:block; font-style:normal; color:#a6d1e0; font-size:11px; font-weight:750; text-transform:uppercase; letter-spacing:.07em; }
+.ogp-case-aside { display:flex; flex-direction:column; align-items:center; gap:16px; }
+.ogp-partner-image { display:block; width:165px; height:96px; object-fit:cover; object-position:50% 52%; border:1px solid rgba(255,255,255,.22); border-radius:9px; }
+.ogp-case-actions { display:flex; flex-direction:column; gap:13px; align-items:center; }
+.ogp-case-actions .button { white-space:nowrap; }
+.ogp-visit-link { color:#d9edf7; text-decoration:underline; text-underline-offset:4px; font-size:12px; font-weight:750; }
+.ogp-visit-link:hover { color:#c8ff4d; }
+.ogp-case-disclosure { padding:0 clamp(27px,4vw,48px) 29px; margin:0; font-size:10px; line-height:1.6; color:#91a9bc; }
+@media(max-width:900px) {
+  .ogp-case-hero {grid-template-columns:1fr 1fr;}
+  .ogp-case-narrative {gap:20px;}
+  .ogp-case-narrative>div + div {padding-left:20px;}
+  .ogp-case-stat {padding:22px 15px;}
+}
+@media(max-width:720px) {
+  .ogp-case-hero {grid-template-columns:1fr;}
+  .ogp-case-photo {min-height:255px; aspect-ratio:16/10;}
+  .ogp-case-photo figcaption {left:12px;right:auto;}
+  .ogp-case-stats {grid-template-columns:repeat(2,minmax(0,1fr));}
+  .ogp-case-stat:nth-child(3) {border-left:0;}
+  .ogp-case-stat:nth-child(n+3) {border-top:1px solid rgba(255,255,255,.13);}
+  .ogp-case-narrative {grid-template-columns:1fr;}
+  .ogp-case-narrative>div + div {padding:19px 0 0; border-left:0; border-top:1px solid rgba(255,255,255,.13);}
+  .ogp-case-quote-panel {grid-template-columns:1fr;}
+  .ogp-case-aside {flex-direction:row; justify-content:space-between; align-items:center; flex-wrap:wrap;}
+  .ogp-partner-image {width:124px; height:80px;}
+  .ogp-case-actions {align-items:flex-start;}
+}
+@media(max-width:420px) {
+  .ogp-case-stat {min-height:85px; padding:20px 12px;}
+  .ogp-case-stat strong {font-size:29px;}
+  .ogp-case-stat span {font-size:11px;}
+  .ogp-case-aside {align-items:flex-start;}
+}
+
+
+/* V21: use cases are now part of the four-step How it works narrative. */
+#how-it-works .how-use-cases { margin:34px 0 0; }
+#how-it-works .how-use-cases h3 { margin:0 0 18px; color:#102338; font-size:clamp(20px,2.25vw,28px); line-height:1.2; letter-spacing:-.02em; }
+#how-it-works .sector-examples article { background:#f6f9fb; }
+#how-it-works .steps-closing { margin-top:28px; }
+
+/* V22: compact assistant header after removing the redundant status label. */
+.chat-assistant .chat-head { gap:8px; padding-top:11px; padding-bottom:11px; }
+.chat-assistant .chat-head-actions { gap:0; }
+
+/* V26: proportionate hero typography, leaving the interactive preview untouched. */
+.hero .hero-copy h1 {
+  font-size:clamp(34px, 3.65vw, 52px) !important;
+  line-height:1.12 !important;
+  letter-spacing:-.035em !important;
+}
+.hero .hero-copy > p.lead {
+  font-size:clamp(14px, 1.14vw, 16px) !important;
+  line-height:1.62 !important;
+  max-width:540px;
+}
+@media (max-width:760px) {
+  .hero .hero-copy h1 { font-size:clamp(32px, 8vw, 42px) !important; }
+  .hero .hero-copy > p.lead { font-size:15px !important; line-height:1.6 !important; }
+}
+
+/* V24: minimise FAQs into a compact label and expand button, not a full-width panel. */
+.chat-assistant.collapsed {
+  width: max-content !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 24px) !important;
+}
+.chat-assistant.collapsed .chat-body { display: none !important; }
+.chat-assistant.collapsed .chat-head {
+  display: flex !important;
+  width: auto !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  padding: 8px 9px 8px 13px !important;
+  margin: 0 !important;
+}
+.chat-assistant.collapsed .chat-head strong { margin: 0 !important; white-space: nowrap; }
+.chat-assistant.collapsed .chat-head-actions {
+  display: flex !important; flex: 0 0 auto !important;
+  width: auto !important; margin: 0 !important; gap: 0 !important;
+}
+
+
+/* V28: hero CTAs aligned with the headline and supporting copy. */
+.hero .hero-copy .hero-actions {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  flex-wrap:wrap !important;
+  gap:16px 24px !important;
+  width:100% !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+  text-align:left !important;
+}
+.hero .hero-copy .hero-actions > a { flex:0 0 auto; }
+
+
+/* V28: keep OffGrid Pro metric labels on one line when the cards are wide enough. */
+@media (min-width:1100px) {
+  .ogp-case-stat { padding-left:clamp(12px,1.4vw,22px); padding-right:clamp(12px,1.4vw,22px); }
+  .ogp-case-stat > span { white-space:nowrap; font-size:clamp(10.5px,.88vw,12px); }
+}
+
+
+/* V31: compact section-introduction typography, aligned with the refined hero scale.
+   Scoped to the four requested sections: all product-preview and functional UI styles stay unchanged. */
+#why-locayter .section-head h2,
+#pricing .pricing-intro h2,
+#campaign-calculator .section-head h2,
+#about .about-copy h2 {
+  font-size:clamp(28px, 3vw, 40px) !important;
+  line-height:1.18 !important;
+  letter-spacing:-.03em !important;
+  text-wrap:balance;
+}
+#why-locayter .section-head > p.lead,
+#pricing .pricing-intro > p.lead,
+#campaign-calculator .section-head > p.lead,
+#about .about-copy > p.lead {
+  font-size:clamp(14px, 1.15vw, 16px) !important;
+  line-height:1.65 !important;
+  letter-spacing:normal !important;
+  text-wrap:pretty;
+}
+#about .about-copy > p.about-second {
+  font-size:14px !important;
+  line-height:1.7 !important;
+  text-wrap:pretty;
+}
+#why-locayter .section-head h2,
+#campaign-calculator .section-head h2 { max-width:620px; }
+#why-locayter .section-head > p.lead,
+#campaign-calculator .section-head > p.lead { max-width:530px; }
+#pricing .pricing-intro > p.lead { max-width:790px; margin-left:auto; margin-right:auto; }
+#about .about-copy h2 { max-width:560px; }
+#about .about-copy > p.lead,
+#about .about-copy > p.about-second { max-width:570px; }
+@media(max-width:760px) {
+  #why-locayter .section-head h2,
+  #pricing .pricing-intro h2,
+  #campaign-calculator .section-head h2,
+  #about .about-copy h2 {
+    font-size:clamp(27px, 7.2vw, 34px) !important;
+    line-height:1.2 !important;
+  }
+  #why-locayter .section-head > p.lead,
+  #pricing .pricing-intro > p.lead,
+  #campaign-calculator .section-head > p.lead,
+  #about .about-copy > p.lead {
+    font-size:14.5px !important;
+    line-height:1.6 !important;
+  }
+  #about .about-copy > p.about-second { font-size:14px !important; line-height:1.65 !important; }
+}
+
+
+/* V32 — cleaner full-width section headers and tighter four-step rhythm */
+#how-it-works .section-head,
+#why-locayter .section-head,
+#campaign-calculator .section-head {
+  display:block !important;
+  grid-template-columns:none !important;
+  align-items:start !important;
+}
+#how-it-works .section-head > div,
+#why-locayter .section-head > div,
+#campaign-calculator .section-head > div {
+  width:100% !important;
+  max-width:none !important;
+}
+#how-it-works .section-head h2,
+#why-locayter .section-head h2,
+#campaign-calculator .section-head h2 {
+  width:100% !important;
+  max-width:none !important;
+  margin-right:0 !important;
+}
+#pricing .pricing-intro h2 { max-width:none !important; }
+#how-it-works .steps > .step {
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:flex-start !important;
+  align-items:flex-start !important;
+  grid-template-rows:none !important;
+  gap:0 !important;
+}
+#how-it-works .steps .step-no {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  box-sizing:border-box !important;
+  margin:0 0 12px !important;
+  padding:0 !important;
+  flex:none !important;
+  line-height:1 !important;
+}
+#how-it-works .steps .step h3 {
+  margin:0 0 10px !important;
+  padding:0 !important;
+  flex:none !important;
+}
+#how-it-works .steps .step p {
+  margin:0 !important;
+  padding:0 !important;
+  flex:none !important;
+}
